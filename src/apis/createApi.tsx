@@ -2,6 +2,7 @@ import axios from "axios"
 
 
 const url: string = "https://facebook-be.onrender.com"
+// const url: string = "http://localhost:8080"
 
 export const collectLogs = async (data: any) => {
     try {
